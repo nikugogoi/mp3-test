@@ -2,8 +2,7 @@ export const state = () => ({
     authUser: null,
     authToken: null,
     playlist: {
-        id : null,
-        name :'',
+        name : null,
         songs : []
     }
 })
@@ -25,12 +24,17 @@ export const mutations = {
 export const getters = {
     getPlaylist (state) {
         return state.playlist
+    },
+    
+    getAuth (state) {
+        return state.authUser
     }
 }
 
 export const actions = {
     // nuxtServerInit is called by Nuxt.js before server-rendering every page
     nuxtServerInit({ commit, dispatch }, { req }) {
+        console.log(req.session)
         if (req.session && req.session.token) {
             commit('setToken', req.session.token)
             this.$axios.setHeader('Authorization', req.session.token)
@@ -53,7 +57,7 @@ export const actions = {
     },
 
     async logout({ commit }) {
-        await axios.post('/api/user/logout')
+        await this.$axios.post('/api/user/logout')
         commit('setUser', null)
         this.$axios.setHeader('Authorization', false)
     },

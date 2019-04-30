@@ -1,13 +1,24 @@
 const _ = require('lodash')
-const { Router } = require('express')
+const express = require('express')
 const { authenticate } = require('./middleware/authenticate')
 const bodyParser = require('body-parser')
-const router = Router()
+
+const router = express.Router()
 const { Song } = require('./models/song')
 const { User } = require('./models/user')
 
 // Add restaurants Routes
 router.use(bodyParser.json())
+
+// Transform req & res to have the same API as express
+const app = express()
+router.use((req, res, next) => {
+  Object.setPrototypeOf(req, app.request)
+  Object.setPrototypeOf(res, app.response)
+  req.res = res
+  res.req = req
+  next()
+})
 
 router.get('/songs', (req, res) => {
     const limit = req.query.limit || 20
@@ -47,6 +58,7 @@ router.post('/users/login', (req, res)=>{
     User.findByCredentials(body.email, body.password).then(user => {
         user.generateAuthToken().then(token => {
             req.session.token = token
+            console.log(req.session)
             res.header('x-auth', token).send(user)
         })
     }).catch(e => {
@@ -95,6 +107,38 @@ router.post('/users/playlists', authenticate, (req, res) => {
             }
         }
     }).then(result => {
+        res.status(200).json({ result })
+    })
+})
+
+router.get('/users/playlists/:name', authenticate, (req, res) => {
+    const user = req.user
+    const name = req.params.name
+    let playlist = req.user.playlists.find(playlist => playlist.name == name)
+    
+    Song.find({_id : { $in : playlist.songs }})
+    .then(songs => {
+        const resPlaylist = {
+            name : playlist.name,
+            songs
+            
+        }
+        res.status(200).json({ playlist: resPlaylist })  
+    })
+})
+
+router.put('/users/playlists/:name', authenticate, (req, res) => {
+    const user = req.user
+    var body = _.pick(req.body, ['id'])
+    const name = req.params.name
+    user.updateOne(
+        {
+            $push : { 
+                'playlists.$[elem].songs' : body.id
+            }
+        },
+        { arrayFilters: [ { "elem.name": name } ] }
+    ).then(result => {
         res.status(200).json({ result })
     })
 })

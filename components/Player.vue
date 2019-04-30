@@ -12,7 +12,9 @@
         </nav>
         <nav class="level is-mobile">
             <div class="level-item">
-                <div>volume control</div>
+                <no-ssr>
+                    <vue-slider ref="slider" v-model="volume"></vue-slider>    
+                </no-ssr>
             </div>
             <div class="level-item has-text-centered">
                 <div class="controls">
@@ -52,33 +54,42 @@ export default {
         return {
             playing : false,
             currentlyPlaying : 0,
-            howlers : []
+            howlers : [],
+            volume: 80
         }
     },
 
     watch : {
-        songs : {
-            handler(newSongs){
-                console.log(newSongs)
-                this.howlers = newSongs.map(song => {
-                    return new Howl({
-                        src: [song.file]
-                    })
-                })
-                this.currentlyPlaying = 0
-            }
+        volume(vol){
+            Howler.volume(vol)
         }
+        // songs : {
+        //     handler(newSongs){
+        //         console.log(newSongs)
+        //         this.howlers = newSongs.map(song => {
+        //             return new Howl({
+        //                 src: [song.file]
+        //             })
+        //         })
+        //         this.currentlyPlaying = 0
+        //     }
+        // }
     },
 
     methods : {
         play(id){
             this.stop()
             this.currentlyPlaying = this.songs.findIndex(song => song._id==id)
+            if(!this.howlers[this.currentlyPlaying]){
+                this.howlers[this.currentlyPlaying] = new Howl({
+                    src: [ this.songs[this.currentlyPlaying].file ]
+                })
+            }
             this.resume()
         },
 
         stop(){
-            this.howlers[this.currentlyPlaying].stop()
+            this.howlers[this.currentlyPlaying] && this.howlers[this.currentlyPlaying].stop()
             this.playing = false
         },
 

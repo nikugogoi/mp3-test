@@ -3,23 +3,39 @@
     <h2 class="subtitle">All Songs</h2>
     <b-table
       :data="songs"
-      :columns="columns"
       :selected.sync="selected"
       @select="changeSong"
       focusable>
+      <template slot-scope="props">
+        <b-table-column label="#" width="40">
+            {{ props.index + 1 }}
+        </b-table-column>
+        
+        <b-table-column field="title" label="Title">
+            {{ props.row.title }}
+        </b-table-column>
+  
+        <b-table-column field="artist" label="Artist">
+            {{ props.row.artist }}
+        </b-table-column>
+        
+        <b-table-column v-if="getAuth" label="Action">
+          <button @click="addToPlaylist(props.row._id)" class="is-success button">Add to playlist</button>
+        </b-table-column>
+      </template>
     </b-table>
   </div>
 </template>
 
 <script>
-import Card from '~/components/Card'
+import addToPlaylist from '~/components/AddToPlaylist'
 import { mapMutations, mapGetters } from 'vuex'
 
 export default {
   name: 'AllSongs',
 
   components: {
-    Card
+    addToPlaylist
   },
 
   async asyncData ({ query, error, $axios }) {
@@ -36,34 +52,17 @@ export default {
   data(){
     return {
       selected: null,
-      columns : [
-        // {
-        //   field: 'id',
-        //   label: '#',
-        //   // width: '40',
-        //   numeric: true
-        // },
-        {
-          field: 'title',
-          label: 'Title',
-        },
-        {
-          field: 'artist',
-          label: 'Artist'
-        }
-      ]
     }
   },
 
   computed : {
-    ...mapGetters(['getPlaylist'])
+    ...mapGetters(['getPlaylist', 'getAuth'])
   },
 
   mounted(){
-    if(!this.getPlaylist.id){
+    if(!this.getPlaylist.name){
       this.setPlaylist({
-        id : null,
-        name : 'All Songs',
+        name : null,
         songs : this.songs
       })
     }
@@ -76,9 +75,20 @@ export default {
         name : 'All Songs',
         songs : this.songs
       })
-      console.log(row._id)
-      this.$root.$emit('play', row._id)
+      this.$nextTick(()=>{
+        this.$root.$emit('play', row._id)
+      })
     },
+    
+    addToPlaylist(id){
+      this.$modal.open({
+          parent: this,
+          component: addToPlaylist,
+          props: { id },
+          hasModalCard: true
+      })
+    },
+    
     ...mapMutations(['setPlaylist'])
   }
 }

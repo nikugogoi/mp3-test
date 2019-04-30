@@ -35,7 +35,11 @@ module.exports = {
   ** Plugins to load before mounting the App
   */
   plugins: [
-    '~/plugins/fontawesome.js'
+    '~/plugins/fontawesome.js',
+    {
+      src: '~plugins/vue-slider-component.js',
+      ssr: false
+    }
   ],
 
   /*

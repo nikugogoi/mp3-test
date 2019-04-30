@@ -31,7 +31,7 @@
 import makePlaylist from '~/components/MakePlaylist'
 export default {
 
-    middelware : 'auth',
+    middleware : 'auth',
 
     components : {
         makePlaylist
@@ -72,8 +72,8 @@ export default {
 
     methods:{
         selectPlaylist(row){
-            console.log(row)
-            // this.$router.push(`/playlists/${row.}`)
+            // console.log(row)
+            this.$router.push(`/playlists/${row.name}`)
         },
 
         addPlaylist(name){

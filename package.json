@@ -29,7 +29,8 @@
     "nuxt": "^2.4.0",
     "nuxt-buefy": "^0.3.2",
     "sass-loader": "^7.1.0",
-    "validator": "^10.11.0"
+    "validator": "^10.11.0",
+    "vue-slider-component": "^3.0.31"
   },
   "devDependencies": {
     "eslint-config-prettier": "^4.1.0",
