@@ -63,8 +63,12 @@ export default {
 
   methods : {
     changeSong(row){
-      this.setPlaylist(this.playlist)
-      this.$root.$emit('play', row._id)
+      if(this.getPlaylist.name !== name){
+        this.setPlaylist(this.playlist)
+      }
+      this.$nextTick(() => {
+        this.$root.$emit('play', row._id)
+      })
     },
     
     ...mapMutations(['setPlaylist'])

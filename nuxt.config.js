@@ -28,7 +28,8 @@ module.exports = {
   ** Global CSS
   */
   css: [
-    '@fortawesome/fontawesome-svg-core/styles.css'
+    '@fortawesome/fontawesome-svg-core/styles.css',
+    'vue-slider-component/theme/default.css'
   ],
 
   /*

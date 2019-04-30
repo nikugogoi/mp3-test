@@ -74,6 +74,7 @@
 
           <div class="column is-10">
             <player ref="player" :songs="this.getPlaylist.songs"></player>
+            <br>
             <nuxt/>
           </div>
         </div>

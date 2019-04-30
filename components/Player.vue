@@ -11,10 +11,9 @@
             </div>
         </nav>
         <nav class="level is-mobile">
-            <div class="level-item">
-                <no-ssr>
-                    <vue-slider ref="slider" v-model="volume"></vue-slider>    
-                </no-ssr>
+            <div class="level-item is-block">
+                <p>Volume {{ volume }}</p>
+                <vue-slider ref="slider" v-model="volume"></vue-slider>    
             </div>
             <div class="level-item has-text-centered">
                 <div class="controls">
@@ -61,30 +60,25 @@ export default {
 
     watch : {
         volume(vol){
-            Howler.volume(vol)
+            Howler.volume(vol/100)
+        },
+        songs : {
+            handler(newSongs){
+                this.stop()
+                this.currentlyPlaying = 0
+                this.howlers = []
+            }
         }
-        // songs : {
-        //     handler(newSongs){
-        //         console.log(newSongs)
-        //         this.howlers = newSongs.map(song => {
-        //             return new Howl({
-        //                 src: [song.file]
-        //             })
-        //         })
-        //         this.currentlyPlaying = 0
-        //     }
-        // }
+    },
+
+    created(){
+        Howler.volume(this.volume/100)
     },
 
     methods : {
         play(id){
             this.stop()
             this.currentlyPlaying = this.songs.findIndex(song => song._id==id)
-            if(!this.howlers[this.currentlyPlaying]){
-                this.howlers[this.currentlyPlaying] = new Howl({
-                    src: [ this.songs[this.currentlyPlaying].file ]
-                })
-            }
             this.resume()
         },
 
@@ -94,6 +88,11 @@ export default {
         },
 
         resume(){
+            if(!this.howlers[this.currentlyPlaying]){
+                this.howlers[this.currentlyPlaying] = new Howl({
+                    src: [ this.songs[this.currentlyPlaying].file ]
+                })
+            }
             this.howlers[this.currentlyPlaying].play()
             this.playing = true
         },

@@ -11,14 +11,14 @@ const { User } = require('./models/user')
 router.use(bodyParser.json())
 
 // Transform req & res to have the same API as express
-const app = express()
-router.use((req, res, next) => {
-  Object.setPrototypeOf(req, app.request)
-  Object.setPrototypeOf(res, app.response)
-  req.res = res
-  res.req = req
-  next()
-})
+// const app = express()
+// router.use((req, res, next) => {
+//   Object.setPrototypeOf(req, app.request)
+//   Object.setPrototypeOf(res, app.response)
+//   req.res = res
+//   res.req = req
+//   next()
+// })
 
 router.get('/songs', (req, res) => {
     const limit = req.query.limit || 20
